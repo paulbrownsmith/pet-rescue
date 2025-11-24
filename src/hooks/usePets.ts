@@ -14,20 +14,18 @@ export const usePets = () => {
     if (loadedPets.length === 0) {
       const formattedPets: Pet[] = petData.map((pet: any) => ({
         id: pet.id,
-        iid: pet.iid || pet.id,
         name: pet.name,
         species: pet.species,
         type: pet.species,
         breed: pet.breed,
-        colour: pet.primaryColour,
-        color: pet.primaryColour + (pet.secondaryColour ? ` and ${pet.secondaryColour}` : ''),
+        colour: pet.colour,
         lastSeenLocation: {
           latitude: pet.lastSeenLocation.latitude,
           longitude: pet.lastSeenLocation.longitude,
           address: pet.lastSeenLocation.address,
         },
         lastSeenDate: pet.lastSeenDate,
-        // description: pet.notes,
+        notes: pet.notes,
         contactInfo: {
           name: pet.contactInfo.name,
           phone: pet.contactInfo.phone,
@@ -55,7 +53,7 @@ export const usePets = () => {
       ...petData,
       id: `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       species: petData.type as 'Dog' | 'Cat' | 'Other',
-      colour: petData.color,
+      colour: petData.colour,
       photoUrl: petData.photoUrl || '',
       lastSeenLocation: {
         latitude: petData.lastSeenLocation.lat,
