@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -20,9 +20,11 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const PET_TYPES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'];
+const PET_TYPES = ['Dog', 'Cat', 'Other'];
 
 const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
     type: '',
@@ -45,6 +47,35 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [showMapSelector, setShowMapSelector] = useState(false);
+
+  useEffect(() => {
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          // Update form data with user's location
+          setFormData((prev) => ({
+            ...prev,
+            lastSeenLocation: {
+              ...prev.lastSeenLocation,
+              lat: latitude,
+              lng: longitude,
+            },
+          }));
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          // Fallback to default location (London)
+          setUserLocation({ lat: 51.5074, lng: -0.1278 });
+        }
+      );
+    } else {
+      // Geolocation not supported, use default
+      setUserLocation({ lat: 51.5074, lng: -0.1278 });
+    }
+  }, []);
 
   const isFormValid = (): boolean => {
     return (
