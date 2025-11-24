@@ -15,7 +15,7 @@ export const usePets = () => {
   const addPet = (petData: PetFormData) => {
     const newPet: Pet = {
       ...petData,
-      id: `pet-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       status: 'missing',
       createdAt: new Date().toISOString(),
     };
