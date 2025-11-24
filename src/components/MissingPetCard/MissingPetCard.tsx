@@ -97,18 +97,17 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
           <Typography display="block">
             {pet.contactInfo.name}
           </Typography>
-          {pet.photoUrl && (
-            <Button
-              fullWidth
-              size="medium"
-              variant="outlined"
-              color="primary"
-              startIcon={<VisibilityIcon />}
-              onClick={handleOpenDialog}
-            >
-              View {pet.name}'s Photo
-            </Button>
-          )}
+          <Button
+            fullWidth
+            size="medium"
+            variant="outlined"
+            color="primary"
+            startIcon={<VisibilityIcon />}
+            onClick={handleOpenDialog}
+            disabled={!pet.photoUrl}
+          >
+            View {pet.name}'s Photo
+          </Button>
           <Button
             fullWidth
             variant="outlined"
