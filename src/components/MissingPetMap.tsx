@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import { LatLngExpression } from 'leaflet';
 import {
@@ -32,6 +32,7 @@ interface MissingPetMapProps {
   center?: LatLngExpression;
   zoom?: number;
   selectionMode?: boolean;
+  selectedPetId?: string | null;
 }
 
 const LocationSelector: React.FC<{ onLocationSelect: (lat: number, lng: number) => void }> = ({
@@ -52,15 +53,29 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
   center,
   zoom = 13,
   selectionMode = false,
+  selectedPetId,
 }) => {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (selectedPetId) {
+      const pet = pets.find(p => p.id === selectedPetId);
+      if (pet) {
+        setSelectedPet(pet);
+        setImageError(false);
+      }
+    }
+  }, [selectedPetId, pets]);
 
   const handleMarkerClick = (pet: Pet) => {
     setSelectedPet(pet);
+    setImageError(false);
   };
 
   const handleClose = () => {
     setSelectedPet(null);
+    setImageError(false);
   };
 
   const handleMarkAsFound = () => {
@@ -129,6 +144,28 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
               />
             </DialogTitle>
             <DialogContent>
+              {selectedPet.photoUrl && !imageError && (
+                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                  <img 
+                    src={selectedPet.photoUrl} 
+                    alt={selectedPet.name}
+                    onError={() => setImageError(true)}
+                    style={{ 
+                      width: '100%', 
+                      maxHeight: '300px', 
+                      objectFit: 'cover',
+                      borderRadius: '8px'
+                    }}
+                  />
+                </Box>
+              )}
+              {selectedPet.photoUrl && imageError && (
+                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Image not available
+                  </Typography>
+                </Box>
+              )}
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="body1" gutterBottom>
@@ -163,7 +200,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
                 </CardContent>
               </Card>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ px: 3, pb: 3 }}>
               <Button onClick={handleClose}>Close</Button>
               {selectedPet.status === 'missing' && (
                 <Button onClick={handleMarkAsFound} variant="contained" color="success">
