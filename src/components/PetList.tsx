@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -9,6 +9,8 @@ import {
   Button,
   CardActions,
   CardHeader,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { Pet } from '../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -23,6 +25,19 @@ interface PetListProps {
 }
 
 const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound, onViewMap }) => {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [foundPetName, setFoundPetName] = useState('');
+
+  const handleMarkAsFound = (petId: string, petName: string) => {
+    onMarkAsFound(petId);
+    setFoundPetName(petName);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   if (pets.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -124,7 +139,7 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound, onViewMap }) => 
                       size="medium"
                       variant="contained"
                       color="success"
-                      onClick={() => onMarkAsFound(pet.id)}
+                      onClick={() => handleMarkAsFound(pet.id, pet.name)}
                     >
                       Mark as Found
                     </Button>
@@ -175,6 +190,18 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound, onViewMap }) => 
           </Grid>
         </>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ width: '90%' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%', backgroundColor: 'success.light' }} variant='outlined' icon={<PetsIcon />}>
+          <Typography variant='h6'>{foundPetName} has been found! 🎉</Typography>
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
