@@ -84,6 +84,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   }, []);
 
   const isFormValid = (): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastSeenDate = new Date(formData.lastSeenDate);
+    const isDateValid = lastSeenDate <= today;
+
     return (
       formData.name.trim() !== '' &&
       formData.type !== '' &&
@@ -93,7 +98,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       formData.description.trim() !== '' &&
       formData.contactInfo.name.trim() !== '' &&
       formData.contactInfo.phone.trim() !== '' &&
-      /^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)
+      /^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone) &&
+      isDateValid
     );
   };
 
@@ -132,6 +138,14 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       newErrors.contactPhone = 'Contact phone is required';
     } else if (!/^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)) {
       newErrors.contactPhone = 'Invalid phone number format';
+    }
+
+    // Validate last seen date is not in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastSeenDate = new Date(formData.lastSeenDate);
+    if (lastSeenDate > today) {
+      newErrors.lastSeenDate = 'Last seen date cannot be in the future';
     }
 
     setErrors(newErrors);
@@ -302,9 +316,14 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
               type="date"
               value={formData.lastSeenDate}
               onChange={handleInputChange('lastSeenDate')}
+              inputProps={{
+                max: new Date().toISOString().split('T')[0]
+              }}
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!errors.lastSeenDate}
+              helperText={errors.lastSeenDate}
               required
             />
           </Grid>
