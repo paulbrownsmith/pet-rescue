@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -8,12 +8,17 @@ import {
   Button,
   CardActions,
   CardHeader,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  DialogTitle,
 } from '@mui/material';
 import { MissingPet } from '../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import WarningIcon from '@mui/icons-material/Warning';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface MissingPetCardProps {
   pet: MissingPet;
@@ -22,6 +27,18 @@ interface MissingPetCardProps {
 }
 
 const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onViewMap }) => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+    setImageError(false);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <Card elevation={3}>
       <CardHeader
@@ -80,6 +97,18 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
           <Typography display="block">
             {pet.contactInfo.name}
           </Typography>
+          {pet.photoUrl && (
+            <Button
+              fullWidth
+              size="medium"
+              variant="outlined"
+              color="primary"
+              startIcon={<VisibilityIcon />}
+              onClick={handleOpenDialog}
+            >
+              View {pet.name}'s Photo
+            </Button>
+          )}
           <Button
             fullWidth
             variant="outlined"
@@ -91,7 +120,7 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
           </Button>
         </Box>
       </CardContent>
-      <CardActions sx={{ padding: 2, pt: 0}}>
+      <CardActions sx={{ padding: 2, pt: 0, display: 'flex', gap: 1, flexDirection: 'column' }}>
         <Button
           fullWidth
           size="medium"
@@ -102,6 +131,34 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
           Mark as Found
         </Button>
       </CardActions>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>{pet.name}</DialogTitle>
+        <DialogContent>
+          {pet.photoUrl && !imageError ? (
+            <Box sx={{ textAlign: 'center' }}>
+              <img
+                src={pet.photoUrl}
+                alt={pet.name}
+                onError={() => setImageError(true)}
+                style={{
+                  width: '100%',
+                  maxHeight: '500px',
+                  objectFit: 'contain',
+                  borderRadius: '8px'
+                }}
+              />
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+              Image not available
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 };
