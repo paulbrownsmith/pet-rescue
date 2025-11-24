@@ -89,6 +89,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     const lastSeenDate = new Date(formData.lastSeenDate);
     const isDateValid = lastSeenDate <= today;
 
+    const phone = formData.contactInfo.phone.replace(/\s+/g, '');
+    const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+    const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+    const isPhoneValid = ukMobileRegex.test(phone) || ukLandlineRegex.test(phone);
+
     return (
       formData.name.trim() !== '' &&
       formData.name.trim().length >= 2 &&
@@ -99,7 +104,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       formData.description.trim() !== '' &&
       formData.contactInfo.name.trim() !== '' &&
       formData.contactInfo.phone.trim() !== '' &&
-      /^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone) &&
+      isPhoneValid &&
       isDateValid
     );
   };
@@ -139,8 +144,16 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
     if (!formData.contactInfo.phone.trim()) {
       newErrors.contactPhone = 'Contact phone is required';
-    } else if (!/^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)) {
-      newErrors.contactPhone = 'Invalid phone number format';
+    } else {
+      const phone = formData.contactInfo.phone.replace(/\s+/g, '');
+      // UK mobile: starts with 07 (with optional +44 or 0044)
+      // UK landline: starts with 01, 02, or 03 (with optional +44 or 0044)
+      const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+      const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+      
+      if (!ukMobileRegex.test(phone) && !ukLandlineRegex.test(phone)) {
+        newErrors.contactPhone = 'Please enter a valid UK mobile (07...) or landline (01/02/03...) number';
+      }
     }
 
     // Validate last seen date is not in the future
@@ -212,15 +225,42 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const handleContactChange = (field: 'name' | 'phone') => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const value = e.target.value;
     setFormData({
       ...formData,
       contactInfo: {
         ...formData.contactInfo,
-        [field]: e.target.value,
+        [field]: value,
       },
     });
+    
     const errorKey = field === 'name' ? 'contactName' : 'contactPhone';
-    if (errors[errorKey]) {
+    
+    // Validate phone in real-time
+    if (field === 'phone') {
+      if (value.trim() === '') {
+        setErrors({
+          ...errors,
+          contactPhone: 'Contact phone is required',
+        });
+      } else {
+        const phone = value.replace(/\s+/g, '');
+        const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+        const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+        
+        if (!ukMobileRegex.test(phone) && !ukLandlineRegex.test(phone)) {
+          setErrors({
+            ...errors,
+            contactPhone: 'Please enter a valid UK mobile (07...) or landline (01/02/03...) number',
+          });
+        } else {
+          setErrors({
+            ...errors,
+            contactPhone: '',
+          });
+        }
+      }
+    } else if (errors[errorKey]) {
       setErrors({
         ...errors,
         [errorKey]: '',
