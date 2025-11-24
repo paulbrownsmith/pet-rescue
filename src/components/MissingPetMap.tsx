@@ -25,6 +25,26 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 });
 
+// Create custom icon for found pets (green marker)
+const foundPetIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Create custom icon for missing pets (red marker)
+const missingPetIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 interface MissingPetMapProps {
   pets: Pet[];
   onMarkAsFound: (id: string) => void;
@@ -86,6 +106,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
   };
 
   const missingPets = pets.filter((pet) => pet.status === 'missing');
+  const foundPets = pets.filter((pet) => pet.status === 'found');
 
   // Calculate center from missing pets or use provided center or default to London
   const mapCenter: LatLngExpression = center || (() => {
@@ -115,6 +136,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
           <Marker
             key={pet.id}
             position={[pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude]}
+            icon={missingPetIcon}
             eventHandlers={{
               click: () => handleMarkerClick(pet),
             }}
@@ -125,6 +147,25 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {pet.species} - {pet.breed}
+              </Typography>
+            </Popup>
+          </Marker>
+        ))}
+        {foundPets.map((pet) => (
+          <Marker
+            key={pet.id}
+            position={[pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude]}
+            icon={foundPetIcon}
+            eventHandlers={{
+              click: () => handleMarkerClick(pet),
+            }}
+          >
+            <Popup>
+              <Typography variant="subtitle2" fontWeight="bold">
+                {pet.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {pet.species} - {pet.breed} (Found!)
               </Typography>
             </Popup>
           </Marker>
