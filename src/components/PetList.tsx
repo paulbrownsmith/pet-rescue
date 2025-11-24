@@ -61,10 +61,10 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                     </Box>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       <PetsIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                      {pet.type} - {pet.breed}
+                      {pet.species} - {pet.breed}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Color: {pet.color}
+                      Colour: {pet.colour}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       <CalendarTodayIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
@@ -75,17 +75,17 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                       {pet.lastSeenLocation.address}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }} noWrap>
-                      {pet.description}
+                      {pet.notes}
                     </Typography>
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="caption" color="primary" fontWeight="bold">
                         Contact:
                       </Typography>
                       <Typography variant="caption" display="block">
-                        {pet.contactName}
+                        {pet.contactInfo.name}
                       </Typography>
                       <Typography variant="caption" display="block">
-                        {pet.contactPhone}
+                        {pet.contactInfo.phone}
                       </Typography>
                     </Box>
                   </CardContent>
@@ -128,10 +128,10 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                     </Box>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       <PetsIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                      {pet.type} - {pet.breed}
+                      {pet.species} - {pet.breed}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Color: {pet.color}
+                      Colour: {pet.colour}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       <CalendarTodayIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />

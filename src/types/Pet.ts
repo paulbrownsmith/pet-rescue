@@ -1,22 +1,24 @@
 export interface Pet {
-  id: string;
+  id: string; // unique identifier (UUID or timestamp)
   name: string;
-  type: string;
+  species: 'Dog' | 'Cat' | 'Other';
   breed: string;
-  color: string;
+  colour: string;
+  photoUrl: string;
   lastSeenLocation: {
-    lat: number;
-    lng: number;
-    address: string;
+    latitude: number;
+    longitude: number;
+    address?: string; // optional text description
   };
-  lastSeenDate: string;
-  description: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
-  imageUrl?: string;
+  lastSeenDate: string; // ISO 8601 format
+  contactInfo: {
+    name: string;
+    phone: string;
+  };
+  notes?: string;
   status: 'missing' | 'found';
-  createdAt: string;
+  createdAt: string; // ISO 8601 format
+  updatedAt: string; // ISO 8601 format
 }
 
 export interface PetFormData {
@@ -31,7 +33,9 @@ export interface PetFormData {
   };
   lastSeenDate: string;
   description: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
+  photoUrl?: string;
+  contactInfo: {
+    name: string;
+    phone: string;
+  };
 }
