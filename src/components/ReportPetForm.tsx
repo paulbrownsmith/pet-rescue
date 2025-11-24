@@ -8,6 +8,11 @@ import {
   Typography,
   MenuItem,
   Alert,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 import { PetFormData } from '../types/Pet';
 import MissingPetMap from './MissingPetMap';
@@ -47,6 +52,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [showMapSelector, setShowMapSelector] = useState(false);
+  const [locationInputMethod, setLocationInputMethod] = useState<'address' | 'map'>('address');
 
   useEffect(() => {
     // Get user's current location
@@ -194,7 +200,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         lng,
       },
     });
-    setShowMapSelector(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -303,52 +308,57 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Last Seen Address"
-              value={formData.lastSeenLocation.address}
-              onChange={handleLocationChange('address')}
-              error={!!errors.address}
-              helperText={errors.address}
-              required
-            />
+          <Grid item xs={12}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">How would you like to specify the location?</FormLabel>
+              <RadioGroup
+                row
+                value={locationInputMethod}
+                onChange={(e) => setLocationInputMethod(e.target.value as 'address' | 'map')}
+              >
+                <FormControlLabel value="address" control={<Radio />} label="Enter Address" />
+                <FormControlLabel value="map" control={<Radio />} label="Select on Map" />
+              </RadioGroup>
+            </FormControl>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Latitude"
-              type="number"
-              value={formData.lastSeenLocation.lat}
-              onChange={handleLocationChange('lat')}
-              inputProps={{ step: 'any' }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Longitude"
-              type="number"
-              value={formData.lastSeenLocation.lng}
-              onChange={handleLocationChange('lng')}
-              inputProps={{ step: 'any' }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => setShowMapSelector(!showMapSelector)}
-              sx={{ height: '56px' }}
-            >
-              {showMapSelector ? 'Hide Map' : 'Select on Map'}
-            </Button>
-          </Grid>
-          {showMapSelector && (
+          {locationInputMethod === 'address' ? (
             <Grid item xs={12}>
-              <Box sx={{ height: '300px', border: '1px solid #ccc', borderRadius: 1 }}>
+              <TextField
+                fullWidth
+                label="Last Seen Address"
+                value={formData.lastSeenLocation.address}
+                onChange={handleLocationChange('address')}
+                error={!!errors.address}
+                helperText={errors.address}
+                required
+              />
+            </Grid>
+          ) : (
+            <Grid item xs={12}>
+              <Box sx={{ height: '400px', border: '1px solid #ccc', borderRadius: 1 }}>
                 <MissingPetMap
-                  pets={[]}
+                  pets={formData.lastSeenLocation.lat && formData.lastSeenLocation.lng ? [{
+                    id: 'temp-marker',
+                    name: 'Selected Location',
+                    species: 'Dog',
+                    breed: '',
+                    colour: '',
+                    photoUrl: '',
+                    lastSeenLocation: {
+                      latitude: formData.lastSeenLocation.lat,
+                      longitude: formData.lastSeenLocation.lng,
+                      address: formData.lastSeenLocation.address,
+                    },
+                    lastSeenDate: new Date().toISOString(),
+                    contactInfo: {
+                      name: '',
+                      phone: '',
+                    },
+                    notes: '',
+                    status: 'missing',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                  }] : []}
                   onMarkAsFound={() => {}}
                   onLocationSelect={handleLocationSelect}
                   center={[formData.lastSeenLocation.lat, formData.lastSeenLocation.lng]}
@@ -356,8 +366,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
                   selectionMode={true}
                 />
               </Box>
-              <Typography variant="caption" color="text.secondary">
-                Click on the map to select the last seen location
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Click on the map to select the last seen location. Selected coordinates: {formData.lastSeenLocation.lat.toFixed(4)}, {formData.lastSeenLocation.lng.toFixed(4)}
               </Typography>
             </Grid>
           )}
