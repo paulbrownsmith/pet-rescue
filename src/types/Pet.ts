@@ -1,4 +1,4 @@
-export interface Pet {
+export interface MissingPet {
   id: string; // unique identifier (UUID or timestamp)
   name: string;
   species: 'Dog' | 'Cat' | 'Other';
@@ -39,4 +39,28 @@ export interface PetFormData {
     name: string;
     phone: string;
   };
+}
+
+export interface PetJSON {
+  id: string;
+  name: string;
+  species: 'Dog' | 'Cat' | 'Other';
+  breed: string;
+  primaryColour: string;
+  secondaryColour?: string;
+  photoUrl: string;
+  lastSeenLocation: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  lastSeenDate: string;
+  contactInfo: {
+    name: string;
+    phone: string;
+  };
+  notes?: string;
+  status: 'missing' | 'found';
+  createdAt: string;
+  updatedAt?: string;
 }

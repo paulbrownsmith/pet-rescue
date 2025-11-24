@@ -13,7 +13,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Pet } from '../types/Pet';
+import { MissingPet } from '../types/Pet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -46,7 +46,7 @@ const missingPetIcon = new L.Icon({
 });
 
 interface MissingPetMapProps {
-  pets: Pet[];
+  pets: MissingPet[];
   onMarkAsFound: (id: string) => void;
   onLocationSelect?: (lat: number, lng: number) => void;
   center?: LatLngExpression;
@@ -75,7 +75,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
   selectionMode = false,
   selectedPetId,
 }) => {
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [selectedPet, setSelectedPet] = useState<MissingPet | null>(null);
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
     }
   }, [selectedPetId, pets]);
 
-  const handleMarkerClick = (pet: Pet) => {
+  const handleMarkerClick = (pet: MissingPet) => {
     setSelectedPet(pet);
     setImageError(false);
   };

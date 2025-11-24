@@ -1,9 +1,9 @@
-import { Pet } from '../types/Pet';
+import { MissingPet } from '../types/Pet';
 
 const STORAGE_KEY = 'pet-rescue-data';
 
 export const storageUtils = {
-  getPets: (): Pet[] => {
+  getPets: (): MissingPet[] => {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       return data ? JSON.parse(data) : [];
@@ -13,7 +13,7 @@ export const storageUtils = {
     }
   },
 
-  savePets: (pets: Pet[]): void => {
+  savePets: (pets: MissingPet[]): void => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(pets));
     } catch (error) {
@@ -21,13 +21,13 @@ export const storageUtils = {
     }
   },
 
-  addPet: (pet: Pet): void => {
+  addPet: (pet: MissingPet): void => {
     const pets = storageUtils.getPets();
     pets.push(pet);
     storageUtils.savePets(pets);
   },
 
-  updatePet: (id: string, updatedPet: Partial<Pet>): void => {
+  updatePet: (id: string, updatedPet: Partial<MissingPet>): void => {
     const pets = storageUtils.getPets();
     const index = pets.findIndex((pet) => pet.id === id);
     if (index !== -1) {
