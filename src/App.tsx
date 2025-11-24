@@ -64,9 +64,15 @@ function TabPanel(props: TabPanelProps) {
 function App() {
   const { pets, addPet, markAsFound } = usePets();
   const [currentTab, setCurrentTab] = useState(0);
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
+  };
+
+  const handleViewPetOnMap = (petId: string) => {
+    setSelectedPetId(petId);
+    setCurrentTab(0);
   };
 
   return (
@@ -100,7 +106,7 @@ function App() {
 
             <TabPanel value={currentTab} index={0}>
               <Box sx={{ height: '600px', width: '100%' }}>
-                <MissingPetMap pets={pets} onMarkAsFound={markAsFound} />
+                <MissingPetMap pets={pets} onMarkAsFound={markAsFound} selectedPetId={selectedPetId} />
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
                 Click on markers to view pet details. {pets.filter(p => p.status === 'missing').length} missing pets currently displayed.
@@ -112,7 +118,7 @@ function App() {
             </TabPanel>
 
             <TabPanel value={currentTab} index={2}>
-              <PetList pets={pets} onMarkAsFound={markAsFound} />
+              <PetList pets={pets} onMarkAsFound={markAsFound} onViewMap={handleViewPetOnMap} />
             </TabPanel>
           </Paper>
         </Container>
