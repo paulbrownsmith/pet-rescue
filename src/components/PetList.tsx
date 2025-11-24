@@ -13,6 +13,7 @@ import { Pet } from '../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import WarningIcon from '@mui/icons-material/Warning';
 
 interface PetListProps {
   pets: Pet[];
@@ -56,7 +57,9 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                       <Chip
                         label={pet.status}
                         color="error"
-                        size="small"
+                        size="medium"
+                        sx={{ textTransform: 'uppercase' }}
+                        icon={<WarningIcon />}
                       />
                     </Box>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
