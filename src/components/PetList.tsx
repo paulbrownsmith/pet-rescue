@@ -78,14 +78,16 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                       {pet.notes}
                     </Typography>
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="caption" color="primary" fontWeight="bold">
+                      <Typography color="primary" fontWeight="bold">
                         Contact:
                       </Typography>
-                      <Typography variant="caption" display="block">
+                      <Typography display="block">
                         {pet.contactInfo.name}
                       </Typography>
-                      <Typography variant="caption" display="block">
-                        {pet.contactInfo.phone}
+                      <Typography display="block">
+                        <a href={`tel:${pet.contactInfo.phone}`} style={{ color: '#fd5b2e', textDecoration: 'none' }}>
+                          {pet.contactInfo.phone}
+                        </a>
                       </Typography>
                     </Box>
                   </CardContent>
