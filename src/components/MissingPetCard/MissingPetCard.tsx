@@ -13,7 +13,7 @@ import {
   DialogActions,
   DialogTitle,
 } from '@mui/material';
-import { MissingPet } from '../types/Pet';
+import { MissingPet } from '../../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -97,18 +97,17 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
           <Typography display="block">
             {pet.contactInfo.name}
           </Typography>
-          {pet.photoUrl && (
-            <Button
-              fullWidth
-              size="medium"
-              variant="outlined"
-              color="primary"
-              startIcon={<VisibilityIcon />}
-              onClick={handleOpenDialog}
-            >
-              View {pet.name}'s Photo
-            </Button>
-          )}
+          <Button
+            fullWidth
+            size="medium"
+            variant="outlined"
+            color="primary"
+            startIcon={<VisibilityIcon />}
+            onClick={handleOpenDialog}
+            disabled={!pet.photoUrl}
+          >
+            View {pet.name}'s Photo
+          </Button>
           <Button
             fullWidth
             variant="outlined"

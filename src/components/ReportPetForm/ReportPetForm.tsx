@@ -14,8 +14,8 @@ import {
   FormControl,
   FormLabel,
 } from '@mui/material';
-import { PetFormData } from '../types/Pet';
-import MissingPetMap from './MissingPetMap';
+import { PetFormData } from '../../types/Pet';
+import MissingPetMap from '../MissingPetMap/MissingPetMap';
 
 interface ReportPetFormProps {
   onSubmit: (data: PetFormData) => void;

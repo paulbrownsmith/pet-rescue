@@ -9,10 +9,10 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { MissingPet } from '../types/Pet';
+import { MissingPet } from '../../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import MissingPetCard from './MissingPetCard';
+import MissingPetCard from '../MissingPetCard/MissingPetCard';
 
 interface PetListProps {
   pets: MissingPet[];

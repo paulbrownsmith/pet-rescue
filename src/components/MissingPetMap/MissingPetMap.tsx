@@ -5,8 +5,8 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { MissingPet } from '../types/Pet';
-import MissingPetDialog from './MissingPetDialog';
+import { MissingPet } from '../../types/Pet';
+import MissingPetDialog from '../MissingPetDialog/MissingPetDialog';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
