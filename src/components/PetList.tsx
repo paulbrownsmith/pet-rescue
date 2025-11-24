@@ -12,14 +12,14 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Pet } from '../types/Pet';
+import { MissingPet } from '../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import WarningIcon from '@mui/icons-material/Warning';
 
 interface PetListProps {
-  pets: Pet[];
+  pets: MissingPet[];
   onMarkAsFound: (id: string) => void;
   onViewMap?: (petId: string) => void;
 }

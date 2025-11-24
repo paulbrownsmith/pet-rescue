@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -8,6 +8,11 @@ import {
   Typography,
   MenuItem,
   Alert,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 import { PetFormData } from '../types/Pet';
 import MissingPetMap from './MissingPetMap';
@@ -20,14 +25,16 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const PET_TYPES = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'];
+const PET_TYPES = ['Dog', 'Cat'];
 
 const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
     type: '',
     breed: '',
-    color: '',
+    colour: '',
     lastSeenLocation: {
       lat: 40.7128,
       lng: -74.006,
@@ -36,6 +43,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     lastSeenDate: new Date().toISOString().split('T')[0],
     description: '',
     photoUrl: '',
+    notes: '',
     contactInfo: {
       name: '',
       phone: '',
@@ -45,12 +53,70 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [showMapSelector, setShowMapSelector] = useState(false);
+  const [locationInputMethod, setLocationInputMethod] = useState<'address' | 'map'>('address');
+
+  useEffect(() => {
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          // Update form data with user's location
+          setFormData((prev) => ({
+            ...prev,
+            lastSeenLocation: {
+              ...prev.lastSeenLocation,
+              lat: latitude,
+              lng: longitude,
+            },
+          }));
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          // Fallback to default location (London)
+          setUserLocation({ lat: 51.5074, lng: -0.1278 });
+        }
+      );
+    } else {
+      // Geolocation not supported, use default
+      setUserLocation({ lat: 51.5074, lng: -0.1278 });
+    }
+  }, []);
+
+  const isFormValid = (): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastSeenDate = new Date(formData.lastSeenDate);
+    const isDateValid = lastSeenDate <= today;
+
+    const phone = formData.contactInfo.phone.replace(/\s+/g, '');
+    const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+    const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+    const isPhoneValid = ukMobileRegex.test(phone) || ukLandlineRegex.test(phone);
+
+    return (
+      formData.name.trim() !== '' &&
+      formData.name.trim().length >= 2 &&
+      formData.type !== '' &&
+      formData.breed.trim() !== '' &&
+      formData.colour.trim() !== '' &&
+      formData.lastSeenLocation.address.trim() !== '' &&
+      formData.description.trim() !== '' &&
+      formData.contactInfo.name.trim() !== '' &&
+      formData.contactInfo.phone.trim() !== '' &&
+      isPhoneValid &&
+      isDateValid
+    );
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Pet name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Pet name must be at least 2 characters';
     }
 
     if (!formData.type) {
@@ -61,8 +127,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       newErrors.breed = 'Breed is required';
     }
 
-    if (!formData.color.trim()) {
-      newErrors.color = 'Color is required';
+    if (!formData.colour.trim()) {
+      newErrors.colour = 'Colour is required';
     }
 
     if (!formData.lastSeenLocation.address.trim()) {
@@ -79,8 +145,24 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
     if (!formData.contactInfo.phone.trim()) {
       newErrors.contactPhone = 'Contact phone is required';
-    } else if (!/^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)) {
-      newErrors.contactPhone = 'Invalid phone number format';
+    } else {
+      const phone = formData.contactInfo.phone.replace(/\s+/g, '');
+      // UK mobile: starts with 07 (with optional +44 or 0044)
+      // UK landline: starts with 01, 02, or 03 (with optional +44 or 0044)
+      const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+      const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+      
+      if (!ukMobileRegex.test(phone) && !ukLandlineRegex.test(phone)) {
+        newErrors.contactPhone = 'Please enter a valid UK mobile (07...) or landline (01/02/03...) number';
+      }
+    }
+
+    // Validate last seen date is not in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastSeenDate = new Date(formData.lastSeenDate);
+    if (lastSeenDate > today) {
+      newErrors.lastSeenDate = 'Last seen date cannot be in the future';
     }
 
     setErrors(newErrors);
@@ -90,12 +172,32 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const handleInputChange = (field: keyof PetFormData) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const value = e.target.value;
     setFormData({
       ...formData,
-      [field]: e.target.value,
+      [field]: value,
     });
-    // Clear error for this field
-    if (errors[field]) {
+    
+    // Validate pet name in real-time
+    if (field === 'name') {
+      if (value.trim() === '') {
+        setErrors({
+          ...errors,
+          name: 'Pet name is required',
+        });
+      } else if (value.trim().length < 2) {
+        setErrors({
+          ...errors,
+          name: 'Pet name must be at least 2 characters',
+        });
+      } else {
+        setErrors({
+          ...errors,
+          name: '',
+        });
+      }
+    } else if (errors[field]) {
+      // Clear error for other fields
       setErrors({
         ...errors,
         [field]: '',
@@ -124,15 +226,42 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const handleContactChange = (field: 'name' | 'phone') => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const value = e.target.value;
     setFormData({
       ...formData,
       contactInfo: {
         ...formData.contactInfo,
-        [field]: e.target.value,
+        [field]: value,
       },
     });
+    
     const errorKey = field === 'name' ? 'contactName' : 'contactPhone';
-    if (errors[errorKey]) {
+    
+    // Validate phone in real-time
+    if (field === 'phone') {
+      if (value.trim() === '') {
+        setErrors({
+          ...errors,
+          contactPhone: 'Contact phone is required',
+        });
+      } else {
+        const phone = value.replace(/\s+/g, '');
+        const ukMobileRegex = /^(\+44|0044|0)7\d{9}$/;
+        const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
+        
+        if (!ukMobileRegex.test(phone) && !ukLandlineRegex.test(phone)) {
+          setErrors({
+            ...errors,
+            contactPhone: 'Please enter a valid UK mobile (07...) or landline (01/02/03...) number',
+          });
+        } else {
+          setErrors({
+            ...errors,
+            contactPhone: '',
+          });
+        }
+      }
+    } else if (errors[errorKey]) {
       setErrors({
         ...errors,
         [errorKey]: '',
@@ -149,7 +278,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         lng,
       },
     });
-    setShowMapSelector(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -162,7 +290,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         name: '',
         type: '',
         breed: '',
-        color: '',
+        colour: '',
         lastSeenLocation: {
           lat: 40.7128,
           lng: -74.006,
@@ -171,6 +299,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         lastSeenDate: new Date().toISOString().split('T')[0],
         description: '',
         photoUrl: '',
+        notes: '',
         contactInfo: {
           name: '',
           phone: '',
@@ -237,11 +366,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Color"
-              value={formData.color}
-              onChange={handleInputChange('color')}
-              error={!!errors.color}
-              helperText={errors.color}
+              label="Colour"
+              value={formData.colour}
+              onChange={handleInputChange('colour')}
+              error={!!errors.colour}
+              helperText={errors.colour}
               required
             />
           </Grid>
@@ -252,58 +381,68 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
               type="date"
               value={formData.lastSeenDate}
               onChange={handleInputChange('lastSeenDate')}
+              inputProps={{
+                max: new Date().toISOString().split('T')[0]
+              }}
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!errors.lastSeenDate}
+              helperText={errors.lastSeenDate}
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Last Seen Address"
-              value={formData.lastSeenLocation.address}
-              onChange={handleLocationChange('address')}
-              error={!!errors.address}
-              helperText={errors.address}
-              required
-            />
+          <Grid item xs={12}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">How would you like to specify the location?</FormLabel>
+              <RadioGroup
+                row
+                value={locationInputMethod}
+                onChange={(e) => setLocationInputMethod(e.target.value as 'address' | 'map')}
+              >
+                <FormControlLabel value="address" control={<Radio />} label="Enter Address" />
+                <FormControlLabel value="map" control={<Radio />} label="Select on Map" />
+              </RadioGroup>
+            </FormControl>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Latitude"
-              type="number"
-              value={formData.lastSeenLocation.lat}
-              onChange={handleLocationChange('lat')}
-              inputProps={{ step: 'any' }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Longitude"
-              type="number"
-              value={formData.lastSeenLocation.lng}
-              onChange={handleLocationChange('lng')}
-              inputProps={{ step: 'any' }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => setShowMapSelector(!showMapSelector)}
-              sx={{ height: '56px' }}
-            >
-              {showMapSelector ? 'Hide Map' : 'Select on Map'}
-            </Button>
-          </Grid>
-          {showMapSelector && (
+          {locationInputMethod === 'address' ? (
             <Grid item xs={12}>
-              <Box sx={{ height: '300px', border: '1px solid #ccc', borderRadius: 1 }}>
+              <TextField
+                fullWidth
+                label="Last Seen Address"
+                value={formData.lastSeenLocation.address}
+                onChange={handleLocationChange('address')}
+                error={!!errors.address}
+                helperText={errors.address}
+                required
+              />
+            </Grid>
+          ) : (
+            <Grid item xs={12}>
+              <Box sx={{ height: '400px', border: '1px solid #ccc', borderRadius: 1 }}>
                 <MissingPetMap
-                  pets={[]}
+                  pets={formData.lastSeenLocation.lat && formData.lastSeenLocation.lng ? [{
+                    id: 'temp-marker',
+                    name: 'Selected Location',
+                    species: 'Dog',
+                    breed: '',
+                    colour: '',
+                    photoUrl: '',
+                    lastSeenLocation: {
+                      latitude: formData.lastSeenLocation.lat,
+                      longitude: formData.lastSeenLocation.lng,
+                      address: formData.lastSeenLocation.address,
+                    },
+                    lastSeenDate: new Date().toISOString(),
+                    contactInfo: {
+                      name: '',
+                      phone: '',
+                    },
+                    notes: '',
+                    status: 'missing',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                  }] : []}
                   onMarkAsFound={() => {}}
                   onLocationSelect={handleLocationSelect}
                   center={[formData.lastSeenLocation.lat, formData.lastSeenLocation.lng]}
@@ -311,23 +450,20 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
                   selectionMode={true}
                 />
               </Box>
-              <Typography variant="caption" color="text.secondary">
-                Click on the map to select the last seen location
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Click on the map to select the last seen location. Selected coordinates: {formData.lastSeenLocation.lat.toFixed(4)}, {formData.lastSeenLocation.lng.toFixed(4)}
               </Typography>
             </Grid>
           )}
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Description"
+              label="Additional Notes/Distinguishing Features (Optional)"
               multiline
-              rows={4}
-              value={formData.description}
-              onChange={handleInputChange('description')}
-              error={!!errors.description}
-              helperText={errors.description}
-              placeholder="Describe your pet, any distinguishing features, behavior, etc."
-              required
+              rows={3}
+              value={formData.notes}
+              onChange={handleInputChange('notes')}
+              placeholder="Any unique markings, scars, collar details, or other features that would help identify your pet"
             />
           </Grid>
           <Grid item xs={12}>
@@ -358,7 +494,14 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              size="large" 
+              fullWidth
+              disabled={!isFormValid()}
+            >
               Submit Report
             </Button>
           </Grid>

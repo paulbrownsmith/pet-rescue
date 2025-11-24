@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Pet, PetFormData } from '../types/Pet';
+import { MissingPet, PetFormData } from '../types/Pet';
 import { storageUtils } from '../utils/storage';
+import { PetJSON } from '../types/Pet';
 import petData from '../data/petData.json';
 
 export const usePets = () => {
-  const [pets, setPets] = useState<Pet[]>([]);
+  const [pets, setPets] = useState<MissingPet[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,30 +13,25 @@ export const usePets = () => {
     
     // If no pets in storage, use the data from petData.json
     if (loadedPets.length === 0) {
-      const formattedPets: Pet[] = petData.map((pet: any) => ({
+      const formattedPets: MissingPet[] = (petData as PetJSON[]).map((pet) => ({
         id: pet.id,
-        iid: pet.iid || pet.id,
         name: pet.name,
         species: pet.species,
-        type: pet.species,
         breed: pet.breed,
-        colour: pet.primaryColour,
-        color: pet.primaryColour + (pet.secondaryColour ? ` and ${pet.secondaryColour}` : ''),
+        colour: pet.secondaryColour ? `${pet.primaryColour}/${pet.secondaryColour}` : pet.primaryColour,
+        photoUrl: pet.photoUrl,
         lastSeenLocation: {
           latitude: pet.lastSeenLocation.latitude,
           longitude: pet.lastSeenLocation.longitude,
           address: pet.lastSeenLocation.address,
         },
         lastSeenDate: pet.lastSeenDate,
-        // description: pet.notes,
         contactInfo: {
           name: pet.contactInfo.name,
           phone: pet.contactInfo.phone,
-          email: pet.contactInfo.email,
         },
-        photoUrl: pet.photoUrl,
-        imageUrl: pet.photoUrl,
-        status: pet.status as 'missing' | 'found',
+        notes: pet.notes,
+        status: pet.status,
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt || pet.createdAt,
       }));
@@ -51,11 +47,11 @@ export const usePets = () => {
   }, []);
 
   const addPet = (petData: PetFormData) => {
-    const newPet: Pet = {
+    const newPet: MissingPet = {
       ...petData,
       id: `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-      species: petData.type as 'Dog' | 'Cat' | 'Other',
-      colour: petData.color,
+      species: petData.type as 'Dog' | 'Cat',
+      colour: petData.colour,
       photoUrl: petData.photoUrl || '',
       lastSeenLocation: {
         latitude: petData.lastSeenLocation.lat,
@@ -75,7 +71,7 @@ export const usePets = () => {
     return newPet;
   };
 
-  const updatePet = (id: string, updatedData: Partial<Pet>) => {
+  const updatePet = (id: string, updatedData: Partial<MissingPet>) => {
     storageUtils.updatePet(id, updatedData);
     setPets(pets.map((pet) => (pet.id === id ? { ...pet, ...updatedData } : pet)));
   };
