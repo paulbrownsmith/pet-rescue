@@ -87,16 +87,21 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                       <Typography display="block">
                         {pet.contactInfo.name}
                       </Typography>
-                      <Typography display="block">
-                        <a href={`tel:${pet.contactInfo.phone}`} style={{ color: '#fd5b2e', textDecoration: 'none' }}>
-                          {pet.contactInfo.phone}
-                        </a>
-                      </Typography>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        size="medium"
+                        href={`tel:${pet.contactInfo.phone}`}
+                        sx={{ mt: 1 }}
+                      >
+                        {pet.contactInfo.phone}
+                      </Button>
                     </Box>
                   </CardContent>
-                  <CardActions>
+                  <CardActions sx={{ padding: 2, pt: 0}}>
                     <Button
-                      size="small"
+                      fullWidth
+                      size="medium"
                       variant="contained"
                       color="success"
                       onClick={() => onMarkAsFound(pet.id)}
