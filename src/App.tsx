@@ -13,11 +13,11 @@ import {
   Typography,
 } from '@mui/material';
 import { usePets } from './hooks/usePets';
-import ReportPetForm from './components/ReportPetForm';
-import MissingPetMap from './components/MissingPetMap';
-import PetList from './components/PetList';
-import Footer from './components/Footer';
-import Header from './components/Header';
+import ReportPetForm from './components/ReportPetForm/ReportPetForm';
+import MissingPetMap from './components/MissingPetMap/MissingPetMap';
+import PetList from './components/PetList/PetList';
+import Footer from './components/Footer/Footer';
+import Header from './components/Header/Header';
 
 const theme = createTheme({
   palette: {

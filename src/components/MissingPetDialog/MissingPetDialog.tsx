@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { MissingPet } from '../types/Pet';
+import { MissingPet } from '../../types/Pet';
 
 interface MissingPetDialogProps {
   pet: MissingPet | null;

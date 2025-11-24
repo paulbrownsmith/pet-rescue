@@ -13,7 +13,7 @@ import {
   DialogActions,
   DialogTitle,
 } from '@mui/material';
-import { MissingPet } from '../types/Pet';
+import { MissingPet } from '../../types/Pet';
 import PetsIcon from '@mui/icons-material/Pets';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
