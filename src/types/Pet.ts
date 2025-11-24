@@ -25,7 +25,7 @@ export interface PetFormData {
   name: string;
   type: string;
   breed: string;
-  color: string;
+  colour: string;
   lastSeenLocation: {
     lat: number;
     lng: number;
@@ -34,6 +34,7 @@ export interface PetFormData {
   lastSeenDate: string;
   description: string;
   photoUrl?: string;
+  notes?: string;
   contactInfo: {
     name: string;
     phone: string;

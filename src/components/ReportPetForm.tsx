@@ -34,7 +34,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     name: '',
     type: '',
     breed: '',
-    color: '',
+    colour: '',
     lastSeenLocation: {
       lat: 40.7128,
       lng: -74.006,
@@ -43,6 +43,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     lastSeenDate: new Date().toISOString().split('T')[0],
     description: '',
     photoUrl: '',
+    notes: '',
     contactInfo: {
       name: '',
       phone: '',
@@ -99,7 +100,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       formData.name.trim().length >= 2 &&
       formData.type !== '' &&
       formData.breed.trim() !== '' &&
-      formData.color.trim() !== '' &&
+      formData.colour.trim() !== '' &&
       formData.lastSeenLocation.address.trim() !== '' &&
       formData.description.trim() !== '' &&
       formData.contactInfo.name.trim() !== '' &&
@@ -126,8 +127,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       newErrors.breed = 'Breed is required';
     }
 
-    if (!formData.color.trim()) {
-      newErrors.color = 'Color is required';
+    if (!formData.colour.trim()) {
+      newErrors.colour = 'Colour is required';
     }
 
     if (!formData.lastSeenLocation.address.trim()) {
@@ -289,7 +290,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         name: '',
         type: '',
         breed: '',
-        color: '',
+        colour: '',
         lastSeenLocation: {
           lat: 40.7128,
           lng: -74.006,
@@ -298,6 +299,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         lastSeenDate: new Date().toISOString().split('T')[0],
         description: '',
         photoUrl: '',
+        notes: '',
         contactInfo: {
           name: '',
           phone: '',
@@ -364,11 +366,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Color"
-              value={formData.color}
-              onChange={handleInputChange('color')}
-              error={!!errors.color}
-              helperText={errors.color}
+              label="Colour"
+              value={formData.colour}
+              onChange={handleInputChange('colour')}
+              error={!!errors.colour}
+              helperText={errors.colour}
               required
             />
           </Grid>
@@ -456,15 +458,12 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Description"
+              label="Additional Notes/Distinguishing Features (Optional)"
               multiline
-              rows={4}
-              value={formData.description}
-              onChange={handleInputChange('description')}
-              error={!!errors.description}
-              helperText={errors.description}
-              placeholder="Describe your pet, any distinguishing features, behavior, etc."
-              required
+              rows={3}
+              value={formData.notes}
+              onChange={handleInputChange('notes')}
+              placeholder="Any unique markings, scars, collar details, or other features that would help identify your pet"
             />
           </Grid>
           <Grid item xs={12}>
