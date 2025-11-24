@@ -2,18 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import { LatLngExpression } from 'leaflet';
 import {
-  Card,
-  CardContent,
   Typography,
   Box,
-  Chip,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import { MissingPet } from '../types/Pet';
+import MissingPetDialog from './MissingPetDialog';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -76,26 +69,22 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
   selectedPetId,
 }) => {
   const [selectedPet, setSelectedPet] = useState<MissingPet | null>(null);
-  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (selectedPetId) {
       const pet = pets.find(p => p.id === selectedPetId);
       if (pet) {
         setSelectedPet(pet);
-        setImageError(false);
       }
     }
   }, [selectedPetId, pets]);
 
   const handleMarkerClick = (pet: MissingPet) => {
     setSelectedPet(pet);
-    setImageError(false);
   };
 
   const handleClose = () => {
     setSelectedPet(null);
-    setImageError(false);
   };
 
   const handleMarkAsFound = () => {
@@ -172,86 +161,12 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
         ))}
       </MapContainer>
 
-      <Dialog open={!!selectedPet} onClose={handleClose} maxWidth="sm" fullWidth>
-        {selectedPet && (
-          <>
-            <DialogTitle>
-              {selectedPet.name}
-              <Chip
-                label={selectedPet.status}
-                color={selectedPet.status === 'missing' ? 'error' : 'success'}
-                size="small"
-                sx={{ ml: 1 }}
-              />
-            </DialogTitle>
-            <DialogContent>
-              {selectedPet.photoUrl && !imageError && (
-                <Box sx={{ mb: 2, textAlign: 'center' }}>
-                  <img 
-                    src={selectedPet.photoUrl} 
-                    alt={selectedPet.name}
-                    onError={() => setImageError(true)}
-                    style={{ 
-                      width: '100%', 
-                      maxHeight: '300px', 
-                      objectFit: 'cover',
-                      borderRadius: '8px'
-                    }}
-                  />
-                </Box>
-              )}
-              {selectedPet.photoUrl && imageError && (
-                <Box sx={{ mb: 2, textAlign: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Image not available
-                  </Typography>
-                </Box>
-              )}
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Type:</strong> {selectedPet.species}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Breed:</strong> {selectedPet.breed}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Colour:</strong> {selectedPet.colour}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Last Seen:</strong> {new Date(selectedPet.lastSeenDate).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Location:</strong> {selectedPet.lastSeenLocation.address}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Notes:</strong> {selectedPet.notes}
-                  </Typography>
-                  <Box mt={2}>
-                    <Typography variant="subtitle2" color="primary" gutterBottom>
-                      Contact Information:
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Name:</strong> {selectedPet.contactInfo.name}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Phone:</strong> {selectedPet.contactInfo.phone}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 3 }}>
-              <Button onClick={handleClose}>Close</Button>
-              {selectedPet.status === 'missing' && (
-                <Button onClick={handleMarkAsFound} variant="contained" color="success">
-                  Mark as Found
-                </Button>
-              )}
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
+      <MissingPetDialog
+        pet={selectedPet}
+        open={!!selectedPet}
+        onClose={handleClose}
+        onMarkAsFound={handleMarkAsFound}
+      />
     </Box>
   );
 };

@@ -4,21 +4,20 @@ import {
   createTheme,
   CssBaseline,
   Container,
-  AppBar,
-  Toolbar,
-  Typography,
   Box,
   Tabs,
   Tab,
   Paper,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import { usePets } from './hooks/usePets';
 import ReportPetForm from './components/ReportPetForm';
 import MissingPetMap from './components/MissingPetMap';
 import PetList from './components/PetList';
-import './Footer.css';
+import Footer from './components/Footer';
+import Header from './components/Header';
 
 const theme = createTheme({
   palette: {
@@ -92,16 +91,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: '#fff1ed' }}>
-        <AppBar position="static" sx={{ bgcolor: '#ffffff' }}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <img src="https://static.crumb.pet/build/0.3.164/static/images/crumb-logo-black.png" style={{ height: '30px' }} alt="crumb logo black"></img>
-            </Box>
-            <Typography variant="h6" component="div" sx={{ color: 'text.primary' }}>
-              Missing Pet Tracker
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <Header />
 
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Paper elevation={2}>
@@ -155,43 +145,7 @@ function App() {
           </Paper>
         </Container>
 
-        <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto', bgcolor: 'background.paper' }}>
-          <div className="bottom-footer wrap">
-            <div className="bottom-footer__left">
-              <img src="https://static.crumb.pet/build/0.3.164/static/images/crumb-logo-black.png" alt="logo" height={'30px'} />
-              <div>
-                <a href="https://facebook.com/crumb.pet" target="_blank" rel="noreferrer">
-                  <img src="https://static.crumb.pet/build/0.3.164/static/images/facebook-icon.webp" alt="facebook" />
-                </a>
-                <a href="https://www.instagram.com/crumb_pet" target="_blank" rel="noreferrer">
-                  <img src="https://static.crumb.pet/build/0.3.164/static/images/instagram-icon.webp" alt="instagram" />
-                </a>
-                <a href="https://twitter.com/crumb_pet" target="_blank" rel="noreferrer">
-                  <img src="https://static.crumb.pet/build/0.3.164/static/images/twitter-icon.webp" alt="twitter" />
-                </a>
-                <a href="https://tiktok.com/@crumbpet" target="_blank" rel="noreferrer">
-                  <img src="https://static.crumb.pet/build/0.3.164/static/images/tiktok-icon.webp" alt="tiktok" />
-                </a>
-              </div>
-            </div>
-            <div className="bottom-footer__right">
-              <div className="bottom-footer__right__item">
-                <p>Products</p>
-                <a href="/en/order">Tag</a>
-                <a href="/en/vet">Crumb Vet</a>
-              </div>
-              <div className="bottom-footer__right__item">
-                <p>Legal</p>
-                <a href="/en/terms">Terms</a>
-                <a href="/en/privacy">Privacy</a>
-              </div>
-              <div className="bottom-footer__right__item">
-                <p>Help</p>
-                <a href="https://help.crumb.pet">Help centre</a>
-              </div>
-            </div>
-          </div>
-        </Box>
+        <Footer />
       </Box>
     </ThemeProvider>
   );

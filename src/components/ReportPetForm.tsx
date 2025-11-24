@@ -32,6 +32,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
+    species: 'Dog',
     type: '',
     breed: '',
     colour: '',
@@ -52,7 +53,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showMapSelector, setShowMapSelector] = useState(false);
   const [locationInputMethod, setLocationInputMethod] = useState<'address' | 'map'>('address');
 
   useEffect(() => {
@@ -285,9 +285,9 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     if (validateForm()) {
       onSubmit(formData);
       setShowSuccess(true);
-      // Reset form
       setFormData({
         name: '',
+        species: 'Dog',
         type: '',
         breed: '',
         colour: '',
@@ -445,7 +445,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
                   }] : []}
                   onMarkAsFound={() => {}}
                   onLocationSelect={handleLocationSelect}
-                  center={[formData.lastSeenLocation.lat, formData.lastSeenLocation.lng]}
+                  center={userLocation ? [userLocation.lat, userLocation.lng] : [formData.lastSeenLocation.lat, formData.lastSeenLocation.lng]}
                   zoom={13}
                   selectionMode={true}
                 />
