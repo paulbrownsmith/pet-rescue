@@ -25,7 +25,7 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const PET_TYPES = ['Dog', 'Cat', 'Other'];
+const PET_TYPES = ['Dog', 'Cat'];
 
 const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);

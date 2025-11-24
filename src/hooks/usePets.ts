@@ -3,6 +3,30 @@ import { Pet, PetFormData } from '../types/Pet';
 import { storageUtils } from '../utils/storage';
 import petData from '../data/petData.json';
 
+interface PetJSON {
+  id: string;
+  name: string;
+  species: 'Dog' | 'Cat' | 'Other';
+  breed: string;
+  primaryColour: string;
+  secondaryColour?: string;
+  photoUrl: string;
+  lastSeenLocation: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  lastSeenDate: string;
+  contactInfo: {
+    name: string;
+    phone: string;
+  };
+  notes?: string;
+  status: 'missing' | 'found';
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export const usePets = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
@@ -12,28 +36,25 @@ export const usePets = () => {
     
     // If no pets in storage, use the data from petData.json
     if (loadedPets.length === 0) {
-      const formattedPets: Pet[] = petData.map((pet: any) => ({
+      const formattedPets: Pet[] = (petData as PetJSON[]).map((pet) => ({
         id: pet.id,
         name: pet.name,
         species: pet.species,
-        type: pet.species,
         breed: pet.breed,
-        colour: pet.colour,
+        colour: pet.secondaryColour ? `${pet.primaryColour}/${pet.secondaryColour}` : pet.primaryColour,
+        photoUrl: pet.photoUrl,
         lastSeenLocation: {
           latitude: pet.lastSeenLocation.latitude,
           longitude: pet.lastSeenLocation.longitude,
           address: pet.lastSeenLocation.address,
         },
         lastSeenDate: pet.lastSeenDate,
-        notes: pet.notes,
         contactInfo: {
           name: pet.contactInfo.name,
           phone: pet.contactInfo.phone,
-          email: pet.contactInfo.email,
         },
-        photoUrl: pet.photoUrl,
-        imageUrl: pet.photoUrl,
-        status: pet.status as 'missing' | 'found',
+        notes: pet.notes,
+        status: pet.status,
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt || pet.createdAt,
       }));
@@ -52,7 +73,7 @@ export const usePets = () => {
     const newPet: Pet = {
       ...petData,
       id: `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-      species: petData.type as 'Dog' | 'Cat' | 'Other',
+      species: petData.type as 'Dog' | 'Cat',
       colour: petData.colour,
       photoUrl: petData.photoUrl || '',
       lastSeenLocation: {
