@@ -38,10 +38,10 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
   const foundPets = pets.filter((pet) => pet.status === 'found');
 
   return (
-    <Box>
+    <Box px={2}>
       {missingPets.length > 0 && (
         <>
-          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
             Missing Pets ({missingPets.length})
           </Typography>
           <Grid container spacing={2}>
