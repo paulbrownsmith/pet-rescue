@@ -51,7 +51,7 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                 <Card elevation={3}>
                   <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="start" mb={1}>
-                      <Typography variant="h6" component="div">
+                      <Typography variant="h4" component="div">
                         {pet.name}
                       </Typography>
                       <Chip
@@ -62,22 +62,25 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound }) => {
                         icon={<WarningIcon />}
                       />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <PetsIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                      {pet.species} - {pet.breed}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Chip
+                      label={`${pet.species} - ${pet.breed}`}
+                      icon={<PetsIcon />}
+                      variant="outlined"
+                      size="medium"
+                      sx={{ mb: 1, color: 'text.secondary', borderColor: 'text.secondary' }}
+                    />
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
                       Colour: {pet.colour}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
                       <CalendarTodayIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
                       Last Seen: {new Date(pet.lastSeenDate).toLocaleDateString()}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
                       <LocationOnIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
                       {pet.lastSeenLocation.address}
                     </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }} noWrap>
+                    <Typography variant="body1" sx={{ mt: 1 }} noWrap>
                       {pet.notes}
                     </Typography>
                     <Box sx={{ mt: 2 }}>
