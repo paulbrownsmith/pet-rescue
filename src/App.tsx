@@ -11,6 +11,8 @@ import {
   Tabs,
   Tab,
   Paper,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import { usePets } from './hooks/usePets';
 import ReportPetForm from './components/ReportPetForm';
@@ -65,10 +67,21 @@ function App() {
   const { pets, addPet, markAsFound } = usePets();
   const [currentTab, setCurrentTab] = useState(0);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+  const [petTypeFilter, setPetTypeFilter] = useState<string>('all');
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
   };
+
+  const handleFilterChange = (_event: React.MouseEvent<HTMLElement>, newFilter: string | null) => {
+    if (newFilter !== null) {
+      setPetTypeFilter(newFilter);
+    }
+  };
+
+  const filteredPets = petTypeFilter === 'all' 
+    ? pets 
+    : pets.filter(pet => pet.species.toLowerCase() === petTypeFilter);
 
   const handleViewPetOnMap = (petId: string) => {
     setSelectedPetId(petId);
@@ -92,6 +105,25 @@ function App() {
 
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Paper elevation={2}>
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', borderBottom: 1, borderColor: 'divider' }}>
+              <ToggleButtonGroup
+                value={petTypeFilter}
+                exclusive
+                onChange={handleFilterChange}
+                aria-label="pet type filter"
+                size="small"
+              >
+                <ToggleButton value="all" aria-label="all pets" sx={{ px: 4 }}>
+                  All Pets
+                </ToggleButton>
+                <ToggleButton value="dog" aria-label="dogs only" sx={{ px: 4 }}>
+                  Dogs
+                </ToggleButton>
+                <ToggleButton value="cat" aria-label="cats only" sx={{ px: 4 }}>
+                  Cats
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
             <Tabs
               value={currentTab}
               onChange={handleTabChange}
@@ -106,10 +138,10 @@ function App() {
 
             <TabPanel value={currentTab} index={0}>
               <Box sx={{ height: '600px', width: '100%' }}>
-                <MissingPetMap pets={pets} onMarkAsFound={markAsFound} selectedPetId={selectedPetId} />
+                <MissingPetMap pets={filteredPets} onMarkAsFound={markAsFound} selectedPetId={selectedPetId} />
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-                Click on markers to view pet details. {pets.filter(p => p.status === 'missing').length} missing pets currently displayed.
+                Click on markers to view pet details. {filteredPets.filter(p => p.status === 'missing').length} missing pets currently displayed.
               </Typography>
             </TabPanel>
 
@@ -118,7 +150,7 @@ function App() {
             </TabPanel>
 
             <TabPanel value={currentTab} index={2}>
-              <PetList pets={pets} onMarkAsFound={markAsFound} onViewMap={handleViewPetOnMap} />
+              <PetList pets={filteredPets} onMarkAsFound={markAsFound} onViewMap={handleViewPetOnMap} />
             </TabPanel>
           </Paper>
         </Container>
