@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   ThemeProvider,
-  createTheme,
   CssBaseline,
   Container,
   Box,
@@ -18,27 +17,7 @@ import MissingPetMap from './components/MissingPetMap/MissingPetMap';
 import PetList from './components/PetList/PetList';
 import Footer from './components/Footer/Footer';
 import Header from './components/Header/Header';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#fd5b2e',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    background: {
-      default: '#fff1ed',
-    },
-    text: {
-      primary: '#313131',
-      secondary: '#313131',
-    },
-  },
-  typography: {
-    fontFamily: '"Afacad", "Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
+import theme from './theme/theme';
 
 interface TabPanelProps {
   children?: React.ReactNode;
