@@ -46,6 +46,20 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showMapSelector, setShowMapSelector] = useState(false);
 
+  const isFormValid = (): boolean => {
+    return (
+      formData.name.trim() !== '' &&
+      formData.type !== '' &&
+      formData.breed.trim() !== '' &&
+      formData.color.trim() !== '' &&
+      formData.lastSeenLocation.address.trim() !== '' &&
+      formData.description.trim() !== '' &&
+      formData.contactInfo.name.trim() !== '' &&
+      formData.contactInfo.phone.trim() !== '' &&
+      /^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)
+    );
+  };
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -358,7 +372,14 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              size="large" 
+              fullWidth
+              disabled={!isFormValid()}
+            >
               Submit Report
             </Button>
           </Grid>
