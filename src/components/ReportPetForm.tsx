@@ -35,9 +35,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     },
     lastSeenDate: new Date().toISOString().split('T')[0],
     description: '',
-    contactName: '',
-    contactPhone: '',
-    contactEmail: '',
+    photoUrl: '',
+    contactInfo: {
+      name: '',
+      phone: '',
+    },
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -71,20 +73,14 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       newErrors.description = 'Description is required';
     }
 
-    if (!formData.contactName.trim()) {
+    if (!formData.contactInfo.name.trim()) {
       newErrors.contactName = 'Contact name is required';
     }
 
-    if (!formData.contactPhone.trim()) {
+    if (!formData.contactInfo.phone.trim()) {
       newErrors.contactPhone = 'Contact phone is required';
-    } else if (!/^\+?[\d\s\-()]+$/.test(formData.contactPhone)) {
+    } else if (!/^\+?[\d\s\-()]+$/.test(formData.contactInfo.phone)) {
       newErrors.contactPhone = 'Invalid phone number format';
-    }
-
-    if (!formData.contactEmail.trim()) {
-      newErrors.contactEmail = 'Contact email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail)) {
-      newErrors.contactEmail = 'Invalid email format';
     }
 
     setErrors(newErrors);
@@ -125,6 +121,25 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     }
   };
 
+  const handleContactChange = (field: 'name' | 'phone') => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({
+      ...formData,
+      contactInfo: {
+        ...formData.contactInfo,
+        [field]: e.target.value,
+      },
+    });
+    const errorKey = field === 'name' ? 'contactName' : 'contactPhone';
+    if (errors[errorKey]) {
+      setErrors({
+        ...errors,
+        [errorKey]: '',
+      });
+    }
+  };
+
   const handleLocationSelect = (lat: number, lng: number) => {
     setFormData({
       ...formData,
@@ -155,9 +170,11 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         },
         lastSeenDate: new Date().toISOString().split('T')[0],
         description: '',
-        contactName: '',
-        contactPhone: '',
-        contactEmail: '',
+        photoUrl: '',
+        contactInfo: {
+          name: '',
+          phone: '',
+        },
       });
       setTimeout(() => setShowSuccess(false), 5000);
     }
@@ -318,37 +335,25 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
               Contact Information
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Your Name"
-              value={formData.contactName}
-              onChange={handleInputChange('contactName')}
+              value={formData.contactInfo.name}
+              onChange={handleContactChange('name')}
               error={!!errors.contactName}
               helperText={errors.contactName}
               required
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Phone Number"
-              value={formData.contactPhone}
-              onChange={handleInputChange('contactPhone')}
+              value={formData.contactInfo.phone}
+              onChange={handleContactChange('phone')}
               error={!!errors.contactPhone}
               helperText={errors.contactPhone}
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Email"
-              type="email"
-              value={formData.contactEmail}
-              onChange={handleInputChange('contactEmail')}
-              error={!!errors.contactEmail}
-              helperText={errors.contactEmail}
               required
             />
           </Grid>

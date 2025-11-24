@@ -49,8 +49,8 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
   pets,
   onMarkAsFound,
   onLocationSelect,
-  center = [40.7128, -74.006], // Default to NYC
-  zoom = 12,
+  center,
+  zoom = 13,
   selectionMode = false,
 }) => {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
@@ -72,10 +72,20 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
 
   const missingPets = pets.filter((pet) => pet.status === 'missing');
 
+  // Calculate center from missing pets or use provided center or default to London
+  const mapCenter: LatLngExpression = center || (() => {
+    if (missingPets.length > 0) {
+      const avgLat = missingPets.reduce((sum, pet) => sum + pet.lastSeenLocation.latitude, 0) / missingPets.length;
+      const avgLng = missingPets.reduce((sum, pet) => sum + pet.lastSeenLocation.longitude, 0) / missingPets.length;
+      return [avgLat, avgLng];
+    }
+    return [51.5074, -0.1278]; // Default to London
+  })();
+
   return (
     <Box sx={{ height: '100%', width: '100%', position: 'relative' }}>
       <MapContainer
-        center={center}
+        center={mapCenter}
         zoom={zoom}
         style={{ height: '100%', width: '100%', minHeight: '400px' }}
       >
@@ -89,7 +99,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
         {missingPets.map((pet) => (
           <Marker
             key={pet.id}
-            position={[pet.lastSeenLocation.lat, pet.lastSeenLocation.lng]}
+            position={[pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude]}
             eventHandlers={{
               click: () => handleMarkerClick(pet),
             }}
@@ -99,7 +109,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
                 {pet.name}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {pet.type} - {pet.breed}
+                {pet.species} - {pet.breed}
               </Typography>
             </Popup>
           </Marker>
@@ -122,13 +132,13 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="body1" gutterBottom>
-                    <strong>Type:</strong> {selectedPet.type}
+                    <strong>Type:</strong> {selectedPet.species}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
                     <strong>Breed:</strong> {selectedPet.breed}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    <strong>Color:</strong> {selectedPet.color}
+                    <strong>Colour:</strong> {selectedPet.colour}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
                     <strong>Last Seen:</strong> {new Date(selectedPet.lastSeenDate).toLocaleDateString()}
@@ -137,20 +147,17 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
                     <strong>Location:</strong> {selectedPet.lastSeenLocation.address}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    <strong>Description:</strong> {selectedPet.description}
+                    <strong>Notes:</strong> {selectedPet.notes}
                   </Typography>
                   <Box mt={2}>
                     <Typography variant="subtitle2" color="primary" gutterBottom>
                       Contact Information:
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Name:</strong> {selectedPet.contactName}
+                      <strong>Name:</strong> {selectedPet.contactInfo.name}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Phone:</strong> {selectedPet.contactPhone}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Email:</strong> {selectedPet.contactEmail}
+                      <strong>Phone:</strong> {selectedPet.contactInfo.phone}
                     </Typography>
                   </Box>
                 </CardContent>
