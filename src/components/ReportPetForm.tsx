@@ -91,6 +91,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
     return (
       formData.name.trim() !== '' &&
+      formData.name.trim().length >= 2 &&
       formData.type !== '' &&
       formData.breed.trim() !== '' &&
       formData.color.trim() !== '' &&
@@ -108,6 +109,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
     if (!formData.name.trim()) {
       newErrors.name = 'Pet name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Pet name must be at least 2 characters';
     }
 
     if (!formData.type) {
@@ -155,12 +158,32 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const handleInputChange = (field: keyof PetFormData) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const value = e.target.value;
     setFormData({
       ...formData,
-      [field]: e.target.value,
+      [field]: value,
     });
-    // Clear error for this field
-    if (errors[field]) {
+    
+    // Validate pet name in real-time
+    if (field === 'name') {
+      if (value.trim() === '') {
+        setErrors({
+          ...errors,
+          name: 'Pet name is required',
+        });
+      } else if (value.trim().length < 2) {
+        setErrors({
+          ...errors,
+          name: 'Pet name must be at least 2 characters',
+        });
+      } else {
+        setErrors({
+          ...errors,
+          name: '',
+        });
+      }
+    } else if (errors[field]) {
+      // Clear error for other fields
       setErrors({
         ...errors,
         [field]: '',
