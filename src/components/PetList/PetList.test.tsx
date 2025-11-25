@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PetList from './PetList';
 import { MissingPet } from '../../types/Pet';
@@ -283,7 +283,9 @@ describe('PetList', () => {
       });
       
       // Fast-forward time by 6 seconds
-      jest.advanceTimersByTime(6000);
+      act(() => {
+        jest.advanceTimersByTime(6000);
+      });
       
       await waitFor(() => {
         expect(screen.queryByText('Buddy has been found! 🎉')).not.toBeInTheDocument();

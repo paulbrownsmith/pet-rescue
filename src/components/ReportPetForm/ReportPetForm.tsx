@@ -102,7 +102,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       formData.breed.trim() !== '' &&
       formData.colour.trim() !== '' &&
       formData.lastSeenLocation.address.trim() !== '' &&
-      formData.description.trim() !== '' &&
       formData.contactInfo.name.trim() !== '' &&
       formData.contactInfo.phone.trim() !== '' &&
       isPhoneValid &&
@@ -133,10 +132,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
     if (!formData.lastSeenLocation.address.trim()) {
       newErrors.address = 'Last seen address is required';
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
     }
 
     if (!formData.contactInfo.name.trim()) {

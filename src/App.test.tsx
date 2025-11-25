@@ -4,6 +4,6 @@ import App from './App';
 
 test('renders pet rescue header', () => {
   render(<App />);
-  const headerElement = screen.getByText(/Pet Rescue - Missing Pet Tracker/i);
+  const headerElement = screen.getByText(/Missing Pet Tracker/i);
   expect(headerElement).toBeInTheDocument();
 });

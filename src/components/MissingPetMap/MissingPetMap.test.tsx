@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import MissingPetMap from './MissingPetMap';
 import { MissingPet } from '../../types/Pet';
@@ -14,15 +15,23 @@ jest.mock('react-leaflet', () => ({
   TileLayer: ({ attribution, url }: any) => (
     <div data-testid="tile-layer" data-attribution={attribution} data-url={url} />
   ),
-  Marker: ({ position, children, eventHandlers }: any) => (
-    <div 
-      data-testid="marker" 
-      data-position={JSON.stringify(position)}
-      onClick={() => eventHandlers?.click?.()}
-    >
-      {children}
-    </div>
-  ),
+  Marker: ({ position, children, eventHandlers }: any) => {
+    const handleClick = () => {
+      if (eventHandlers?.click) {
+        eventHandlers.click();
+      }
+    };
+    
+    return (
+      <div 
+        data-testid="marker" 
+        data-position={JSON.stringify(position)}
+        onClick={handleClick}
+      >
+        {children}
+      </div>
+    );
+  },
   Popup: ({ children }: any) => <div data-testid="popup">{children}</div>,
   useMapEvents: jest.fn(() => null),
 }));
@@ -224,36 +233,36 @@ describe('MissingPetMap', () => {
   });
 
   describe('Pet Selection', () => {
-    it('should open dialog when marker is clicked', () => {
+    it('should open dialog when marker is clicked', async () => {
       render(<MissingPetMap pets={[mockMissingPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       const marker = screen.getByTestId('marker');
-      marker.click();
+      await userEvent.click(marker);
       
       expect(screen.getByTestId('missing-pet-dialog')).toBeInTheDocument();
       expect(screen.getByTestId('dialog-pet-name')).toHaveTextContent('Buddy');
     });
 
-    it('should display correct pet in dialog when marker is clicked', () => {
+    it('should display correct pet in dialog when marker is clicked', async () => {
       render(<MissingPetMap pets={[mockMissingPet, mockFoundPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       const markers = screen.getAllByTestId('marker');
-      markers[1].click(); // Click second marker (Max)
+      await userEvent.click(markers[1]); // Click second marker (Max)
       
       expect(screen.getByTestId('dialog-pet-name')).toHaveTextContent('Max');
     });
 
-    it('should close dialog when close button is clicked', () => {
+    it('should close dialog when close button is clicked', async () => {
       render(<MissingPetMap pets={[mockMissingPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       // Open dialog
       const marker = screen.getByTestId('marker');
-      marker.click();
+      await userEvent.click(marker);
       expect(screen.getByTestId('missing-pet-dialog')).toBeInTheDocument();
       
       // Close dialog
       const closeButton = screen.getByText('Close');
-      closeButton.click();
+      await userEvent.click(closeButton);
       
       expect(screen.queryByTestId('missing-pet-dialog')).not.toBeInTheDocument();
     });
@@ -307,42 +316,42 @@ describe('MissingPetMap', () => {
   });
 
   describe('Mark as Found', () => {
-    it('should call onMarkAsFound when "Mark as Found" button is clicked', () => {
+    it('should call onMarkAsFound when "Mark as Found" button is clicked', async () => {
       render(<MissingPetMap pets={[mockMissingPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       // Open dialog
       const marker = screen.getByTestId('marker');
-      marker.click();
+      await userEvent.click(marker);
       
       // Click Mark as Found
       const markAsFoundButton = screen.getByText('Mark as Found');
-      markAsFoundButton.click();
+      await userEvent.click(markAsFoundButton);
       
       expect(mockOnMarkAsFound).toHaveBeenCalledTimes(1);
       expect(mockOnMarkAsFound).toHaveBeenCalledWith('1');
     });
 
-    it('should close dialog after marking pet as found', () => {
+    it('should close dialog after marking pet as found', async () => {
       render(<MissingPetMap pets={[mockMissingPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       // Open dialog
       const marker = screen.getByTestId('marker');
-      marker.click();
+      await userEvent.click(marker);
       expect(screen.getByTestId('missing-pet-dialog')).toBeInTheDocument();
       
       // Mark as Found
       const markAsFoundButton = screen.getByText('Mark as Found');
-      markAsFoundButton.click();
+      await userEvent.click(markAsFoundButton);
       
       expect(screen.queryByTestId('missing-pet-dialog')).not.toBeInTheDocument();
     });
 
-    it('should not show "Mark as Found" button for found pets', () => {
+    it('should not show "Mark as Found" button for found pets', async () => {
       render(<MissingPetMap pets={[mockFoundPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
       // Open dialog
       const marker = screen.getByTestId('marker');
-      marker.click();
+      await userEvent.click(marker);
       
       expect(screen.queryByText('Mark as Found')).not.toBeInTheDocument();
     });
