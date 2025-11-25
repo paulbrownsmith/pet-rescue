@@ -94,12 +94,16 @@ describe('MissingPetCard', () => {
 
     it('should render "View Photo" button when photoUrl exists', () => {
       render(<MissingPetCard pet={mockPet} onMarkAsFound={mockOnMarkAsFound} />);
-      expect(screen.getByRole('button', { name: /View Buddy's Photo/i })).toBeInTheDocument();
+      const viewPhotoButton = screen.getByRole('button', { name: /View Buddy's Photo/i });
+      expect(viewPhotoButton).toBeInTheDocument();
+      expect(viewPhotoButton).not.toBeDisabled();
     });
 
-    it('should not render "View Photo" button when photoUrl is empty', () => {
+    it('should render "View Photo" button disabled when photoUrl is empty', () => {
       render(<MissingPetCard pet={mockPetWithoutPhoto} onMarkAsFound={mockOnMarkAsFound} />);
-      expect(screen.queryByRole('button', { name: /View.*Photo/i })).not.toBeInTheDocument();
+      const viewPhotoButton = screen.getByRole('button', { name: /View.*Photo/i });
+      expect(viewPhotoButton).toBeInTheDocument();
+      expect(viewPhotoButton).toBeDisabled();
     });
 
     it('should render phone number as a tel link', () => {

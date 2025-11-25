@@ -125,7 +125,9 @@ describe('MissingPetDialog', () => {
 
     it('should display pet colour', () => {
       expect(screen.getByText(/Colour:/)).toBeInTheDocument();
-      expect(screen.getByText(/Golden/)).toBeInTheDocument();
+      expect(screen.getByText((content, element) => {
+        return element?.textContent === 'Colour: Golden';
+      })).toBeInTheDocument();
     });
 
     it('should display last seen date', () => {
