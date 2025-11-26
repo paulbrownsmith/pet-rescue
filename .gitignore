@@ -25,3 +25,6 @@ yarn-error.log*
 # documentation
 /public/architecture.html
 /public/documentation.html
+
+*storybook.log
+storybook-static
