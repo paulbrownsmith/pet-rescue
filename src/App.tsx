@@ -49,6 +49,10 @@ function App() {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
+    // Clear selected pet when navigating away from Map View
+    if (newValue !== 0) {
+      setSelectedPetId(null);
+    }
   };
 
   const handleFilterChange = (_event: React.MouseEvent<HTMLElement>, newFilter: string | null) => {
