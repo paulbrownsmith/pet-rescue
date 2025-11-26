@@ -116,9 +116,21 @@ function App() {
               variant="fullWidth"
               sx={{ borderBottom: 1, borderColor: 'divider' }}
             >
-              <Tab label="Missing Pet Map View" icon={<MapIcon />} iconPosition="start" />
-              <Tab label="Report Missing Pet" icon={<AddIcon />} iconPosition="start" />
-              <Tab label="All Missing Pet Reports" icon={<ListIcon />} iconPosition="start" />
+              <Tab 
+                label="Missing Pet Map View" 
+                icon={<MapIcon sx={{ display: { xs: 'none', sm: 'block' } }} />} 
+                iconPosition="start" 
+              />Ì
+              <Tab 
+                label="Report Missing Pet" 
+                icon={<AddIcon sx={{ display: { xs: 'none', sm: 'block' } }} />} 
+                iconPosition="start" 
+              />
+              <Tab 
+                label="All Missing Pet Reports" 
+                icon={<ListIcon sx={{ display: { xs: 'none', sm: 'block' } }} />} 
+                iconPosition="start" 
+              />
             </Tabs>
 
             <TabPanel value={currentTab} index={0}>
