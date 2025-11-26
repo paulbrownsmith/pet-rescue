@@ -313,11 +313,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <Box sx={{ p: 1.5, mb: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Report a Missing Pet
-      </Typography>
-
+    <Box>
       <Snackbar
         open={showSuccess}
         onClose={(event, reason) => {
