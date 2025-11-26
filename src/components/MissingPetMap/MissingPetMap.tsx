@@ -128,7 +128,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
       <MapContainer
         center={mapCenter}
         zoom={zoom}
-        style={{ height: '100%', width: '100%', minHeight: '400px' }}
+        style={{ height: '100%', width: '100%', minHeight: '600px' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
