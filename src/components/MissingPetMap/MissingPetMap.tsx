@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import { LatLngExpression } from 'leaflet';
 import {
   Typography,
@@ -56,6 +56,22 @@ const LocationSelector: React.FC<{ onLocationSelect: (lat: number, lng: number) 
       onLocationSelect(e.latlng.lat, e.latlng.lng);
     },
   });
+  return null;
+};
+
+const MapCenterController: React.FC<{ selectedPet: MissingPet | null }> = ({ selectedPet }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (selectedPet) {
+      map.setView(
+        [selectedPet.lastSeenLocation.latitude, selectedPet.lastSeenLocation.longitude],
+        15,
+        { animate: true }
+      );
+    }
+  }, [selectedPet, map]);
+  
   return null;
 };
 
@@ -118,6 +134,7 @@ const MissingPetMap: React.FC<MissingPetMapProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapCenterController selectedPet={selectedPet} />
         {selectionMode && onLocationSelect && (
           <LocationSelector onLocationSelect={onLocationSelect} />
         )}

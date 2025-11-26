@@ -66,6 +66,13 @@ function App() {
     setCurrentTab(0);
   };
 
+  const handleAddPet = (petData: any) => {
+    const newPet = addPet(petData);
+    // Switch to map view and select the newly added pet
+    setSelectedPetId(newPet.id);
+    setCurrentTab(0);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -81,6 +88,7 @@ function App() {
                 onChange={handleFilterChange}
                 aria-label="pet type filter"
                 size="small"
+                disabled={currentTab === 1}
               >
                 <ToggleButton value="all" aria-label="all pets" sx={{ px: 4 }}>
                   All Pets
@@ -115,7 +123,7 @@ function App() {
             </TabPanel>
 
             <TabPanel value={currentTab} index={1}>
-              <ReportPetForm onSubmit={addPet} />
+              <ReportPetForm onSubmit={handleAddPet} />
             </TabPanel>
 
             <TabPanel value={currentTab} index={2}>
