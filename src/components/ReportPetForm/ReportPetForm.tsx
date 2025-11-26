@@ -13,7 +13,10 @@ import {
   Radio,
   FormControl,
   FormLabel,
+  Snackbar,
+  IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { PetFormData } from '../../types/Pet';
 import MissingPetMap from '../MissingPetMap/MissingPetMap';
 
@@ -53,6 +56,7 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedPetName, setSubmittedPetName] = useState<string>('');
   const [locationInputMethod, setLocationInputMethod] = useState<'address' | 'map'>('address');
 
   useEffect(() => {
@@ -95,13 +99,16 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
     const ukLandlineRegex = /^(\+44|0044|0)[1-3]\d{9,10}$/;
     const isPhoneValid = ukMobileRegex.test(phone) || ukLandlineRegex.test(phone);
 
+    // Address is only required when using address input method
+    const isAddressValid = locationInputMethod === 'map' || formData.lastSeenLocation.address.trim() !== '';
+
     return (
       formData.name.trim() !== '' &&
       formData.name.trim().length >= 2 &&
       formData.type !== '' &&
       formData.breed.trim() !== '' &&
       formData.colour.trim() !== '' &&
-      formData.lastSeenLocation.address.trim() !== '' &&
+      isAddressValid &&
       formData.contactInfo.name.trim() !== '' &&
       formData.contactInfo.phone.trim() !== '' &&
       isPhoneValid &&
@@ -130,7 +137,8 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
       newErrors.colour = 'Colour is required';
     }
 
-    if (!formData.lastSeenLocation.address.trim()) {
+    // Address is only required when using address input method
+    if (locationInputMethod === 'address' && !formData.lastSeenLocation.address.trim()) {
       newErrors.address = 'Last seen address is required';
     }
 
@@ -278,7 +286,9 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      const petName = formData.name;
       onSubmit(formData);
+      setSubmittedPetName(petName);
       setShowSuccess(true);
       setFormData({
         name: '',
@@ -300,7 +310,6 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
           phone: '',
         },
       });
-      setTimeout(() => setShowSuccess(false), 5000);
     }
   };
 
@@ -310,11 +319,34 @@ const ReportPetForm: React.FC<ReportPetFormProps> = ({ onSubmit }) => {
         Report a Missing Pet
       </Typography>
 
-      {showSuccess && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setShowSuccess(false)}>
-          Pet report submitted successfully!
+      <Snackbar
+        open={showSuccess}
+        onClose={(event, reason) => {
+          // Only allow closing via the close button, not by clicking away or timeout
+          if (reason === 'clickaway') {
+            return;
+          }
+        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity="info"
+          onClose={() => setShowSuccess(false)}
+          action={
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setShowSuccess(false)}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
+          sx={{ width: '100%' }}
+        >
+          Missing pet {submittedPetName} has been submitted
         </Alert>
-      )}
+      </Snackbar>
 
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
