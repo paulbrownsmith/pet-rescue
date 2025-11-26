@@ -11,6 +11,9 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import MapIcon from '@mui/icons-material/Map';
+import AddIcon from '@mui/icons-material/Add';
+import ListIcon from '@mui/icons-material/List';
 import { usePets } from './hooks/usePets';
 import ReportPetForm from './components/ReportPetForm/ReportPetForm';
 import MissingPetMap from './components/MissingPetMap/MissingPetMap';
@@ -18,6 +21,7 @@ import PetList from './components/PetList/PetList';
 import Footer from './components/Footer/Footer';
 import Header from './components/Header/Header';
 import theme from './theme/theme';
+import Title from './components/Title/Title';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -36,7 +40,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
 }
@@ -95,13 +99,13 @@ function App() {
                 disabled={currentTab === 1}
               >
                 <ToggleButton value="all" aria-label="all pets" sx={{ px: 4 }}>
-                  All Pets
+                  All Missing Pets
                 </ToggleButton>
                 <ToggleButton value="dog" aria-label="dogs only" sx={{ px: 4 }}>
-                  Dogs
+                  Missing Dogs
                 </ToggleButton>
                 <ToggleButton value="cat" aria-label="cats only" sx={{ px: 4 }}>
-                  Cats
+                  Missing Cats
                 </ToggleButton>
               </ToggleButtonGroup>
             </Box>
@@ -112,25 +116,26 @@ function App() {
               variant="fullWidth"
               sx={{ borderBottom: 1, borderColor: 'divider' }}
             >
-              <Tab label="Map View" />
-              <Tab label="Report Pet" />
-              <Tab label="All Reports" />
+              <Tab label="Missing Pet Map View" icon={<MapIcon />} iconPosition="start" />
+              <Tab label="Report Missing Pet" icon={<AddIcon />} iconPosition="start" />
+              <Tab label="All Missing Pet Reports" icon={<ListIcon />} iconPosition="start" />
             </Tabs>
 
             <TabPanel value={currentTab} index={0}>
-              <Box sx={{ height: '600px', width: '100%' }}>
-                <MissingPetMap pets={filteredPets} onMarkAsFound={markAsFound} selectedPetId={selectedPetId} />
-              </Box>
+              <Title title="Missing Pet Map View" />
+              <MissingPetMap pets={filteredPets} onMarkAsFound={markAsFound} selectedPetId={selectedPetId} />
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
                 Click on markers to view pet details. {filteredPets.filter(p => p.status === 'missing').length} missing pets currently displayed.
               </Typography>
             </TabPanel>
 
             <TabPanel value={currentTab} index={1}>
+              <Title title="Report Missing Pet" />
               <ReportPetForm onSubmit={handleAddPet} />
             </TabPanel>
 
             <TabPanel value={currentTab} index={2}>
+              <Title title="All Missing Pet Reports" />
               <PetList pets={filteredPets} onMarkAsFound={markAsFound} onViewMap={handleViewPetOnMap} />
             </TabPanel>
           </Paper>

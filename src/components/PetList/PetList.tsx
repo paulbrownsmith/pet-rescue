@@ -52,12 +52,9 @@ const PetList: React.FC<PetListProps> = ({ pets, onMarkAsFound, onViewMap }) => 
   const foundPets = pets.filter((pet) => pet.status === 'found');
 
   return (
-    <Box px={2}>
+    <Box>
       {missingPets.length > 0 && (
         <>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            Missing Pets ({missingPets.length})
-          </Typography>
           <Grid container spacing={2}>
             {missingPets.map((pet) => (
               <Grid item xs={12} sm={6} md={4} key={pet.id}>
