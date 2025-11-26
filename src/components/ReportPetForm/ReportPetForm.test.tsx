@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ReportPetForm from './ReportPetForm';
-import { PetFormData } from '../../types/Pet';
 
 // Mock MissingPetMap component
 jest.mock('../MissingPetMap/MissingPetMap', () => ({
