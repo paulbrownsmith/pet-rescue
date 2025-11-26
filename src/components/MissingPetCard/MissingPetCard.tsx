@@ -84,7 +84,7 @@ const MissingPetCard: React.FC<MissingPetCardProps> = ({ pet, onMarkAsFound, onV
             onClick={() => onViewMap?.(pet.id)}
             style={{ cursor: 'pointer', textDecoration: 'underline' }}
           >
-            {pet.lastSeenLocation.address}
+            {pet.lastSeenLocation.address || pet.lastSeenLocation.latitude.toFixed(4) + ', ' + pet.lastSeenLocation.longitude.toFixed(4)}
           </span>
         </Typography>
         <Typography variant="body1" sx={{ mt: 1 }} noWrap>
