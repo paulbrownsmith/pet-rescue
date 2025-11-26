@@ -39,7 +39,9 @@ describe('ReportPetForm', () => {
   describe('Form Rendering', () => {
     it('should render form title', () => {
       render(<ReportPetForm onSubmit={mockOnSubmit} />);
-      expect(screen.getByText('Report a Missing Pet')).toBeInTheDocument();
+      // Form title is now rendered in TabPanel as Title component
+      // Just check that form fields are present
+      expect(screen.getByLabelText(/Pet Name/i)).toBeInTheDocument();
     });
 
     it('should render all required form fields', () => {
@@ -322,7 +324,7 @@ describe('ReportPetForm', () => {
       fireEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText('Pet report submitted successfully!')).toBeInTheDocument();
+        expect(screen.getByText(/Missing pet Buddy has been submitted/i)).toBeInTheDocument();
       });
     });
 
@@ -376,7 +378,7 @@ describe('ReportPetForm', () => {
       fireEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText('Pet report submitted successfully!')).toBeInTheDocument();
+        expect(screen.getByText(/Missing pet Buddy has been submitted/i)).toBeInTheDocument();
       });
       
       const closeButton = screen.getByLabelText(/close/i);
@@ -421,7 +423,7 @@ describe('ReportPetForm', () => {
       
       await waitFor(() => {
         // Should still render without errors
-        expect(screen.getByText('Report a Missing Pet')).toBeInTheDocument();
+        expect(screen.getByLabelText(/Pet Name/i)).toBeInTheDocument();
       });
     });
 
@@ -431,7 +433,7 @@ describe('ReportPetForm', () => {
       
       render(<ReportPetForm onSubmit={mockOnSubmit} />);
       
-      expect(screen.getByText('Report a Missing Pet')).toBeInTheDocument();
+      expect(screen.getByLabelText(/Pet Name/i)).toBeInTheDocument();
       
       (global.navigator as any).geolocation = originalGeolocation;
     });

@@ -6,6 +6,13 @@ import MissingPetMap from './MissingPetMap';
 import { MissingPet } from '../../types/Pet';
 
 // Mock react-leaflet components
+const mockMapInstance = {
+  setView: jest.fn(),
+  flyTo: jest.fn(),
+  getZoom: jest.fn(() => 13),
+  getCenter: jest.fn(() => ({ lat: 51.5074, lng: -0.1278 })),
+};
+
 jest.mock('react-leaflet', () => ({
   MapContainer: ({ children, center, zoom }: any) => (
     <div data-testid="map-container" data-center={JSON.stringify(center)} data-zoom={zoom}>
@@ -34,6 +41,7 @@ jest.mock('react-leaflet', () => ({
   },
   Popup: ({ children }: any) => <div data-testid="popup">{children}</div>,
   useMapEvents: jest.fn(() => null),
+  useMap: () => mockMapInstance,
 }));
 
 // Mock MissingPetDialog component
