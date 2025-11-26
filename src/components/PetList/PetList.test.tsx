@@ -120,7 +120,9 @@ describe('PetList', () => {
     it('should display missing pets section title with count', () => {
       render(<PetList pets={[mockMissingPet1, mockMissingPet2]} onMarkAsFound={mockOnMarkAsFound} />);
       
-      expect(screen.getByText('Missing Pets (2)')).toBeInTheDocument();
+      // Missing pets section no longer has a heading
+      expect(screen.getByTestId('pet-card-1')).toBeInTheDocument();
+      expect(screen.getByTestId('pet-card-2')).toBeInTheDocument();
     });
 
     it('should render all missing pets', () => {
@@ -141,7 +143,7 @@ describe('PetList', () => {
     it('should only display missing pets in missing section', () => {
       render(<PetList pets={[mockMissingPet1, mockFoundPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
-      expect(screen.getByText('Missing Pets (1)')).toBeInTheDocument();
+      // Missing pets section no longer has a heading
       expect(screen.getByTestId('pet-card-1')).toBeInTheDocument();
     });
 
@@ -189,8 +191,9 @@ describe('PetList', () => {
     it('should display both missing and found sections when both exist', () => {
       render(<PetList pets={[mockMissingPet1, mockFoundPet]} onMarkAsFound={mockOnMarkAsFound} />);
       
-      expect(screen.getByText('Missing Pets (1)')).toBeInTheDocument();
+      // Missing pets section no longer has a heading
       expect(screen.getByText('Recently Found Pets (1)')).toBeInTheDocument();
+      expect(screen.getByTestId('pet-card-1')).toBeInTheDocument();
     });
   });
 
@@ -331,8 +334,10 @@ describe('PetList', () => {
       const pets = [mockMissingPet1, mockMissingPet2, mockFoundPet];
       render(<PetList pets={pets} onMarkAsFound={mockOnMarkAsFound} />);
       
-      expect(screen.getByText('Missing Pets (2)')).toBeInTheDocument();
+      // Missing pets section no longer has a heading
       expect(screen.getByText('Recently Found Pets (1)')).toBeInTheDocument();
+      expect(screen.getByTestId('pet-card-1')).toBeInTheDocument();
+      expect(screen.getByTestId('pet-card-2')).toBeInTheDocument();
     });
 
     it('should correctly count pets in each section', () => {
@@ -344,7 +349,7 @@ describe('PetList', () => {
       ];
       render(<PetList pets={pets} onMarkAsFound={mockOnMarkAsFound} />);
       
-      expect(screen.getByText('Missing Pets (2)')).toBeInTheDocument();
+      // Missing pets section doesn't have a heading
       expect(screen.getByText('Recently Found Pets (2)')).toBeInTheDocument();
     });
   });
